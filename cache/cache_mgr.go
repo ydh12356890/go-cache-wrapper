@@ -33,6 +33,14 @@ func (cm *CacheMgr) Stop() {
 	}
 }
 
+func (cm *CacheMgr) Has(key string) bool {
+	return cm.cache.Has(key)
+}
+
+func (cm *CacheMgr) Delete(key string) {
+	cm.cache.Delete(key)
+}
+
 func (cm *CacheMgr) Get(key string) ([]byte, error) {
 	if cm.cache == nil {
 		return nil, fmt.Errorf("cache not found")
