@@ -28,9 +28,7 @@ func NewCacheMgr(capacity int, ttl int) (*CacheMgr, error) {
 }
 
 func (cm *CacheMgr) Stop() {
-	if cm.cache != nil {
-		cm.cache.Close()
-	}
+	cm.cache.Close()
 }
 
 func (cm *CacheMgr) Has(key string) bool {
@@ -41,34 +39,15 @@ func (cm *CacheMgr) Delete(key string) {
 	cm.cache.Delete(key)
 }
 
-func (cm *CacheMgr) Get(key string) ([]byte, error) {
-	if cm.cache == nil {
-		return nil, fmt.Errorf("cache not found")
-	}
-
-	value, ok := cm.cache.Get(key)
-	if !ok {
-		return nil, fmt.Errorf("failed to get key: %s from cache", key)
-	}
-	return value, nil
+func (cm *CacheMgr) Get(key string) ([]byte, bool) {
+	return cm.cache.Get(key)
 }
 
-func (cm *CacheMgr) Set(key string, value []byte) error {
-	if cm.cache == nil {
-		return fmt.Errorf("cache not found")
-	}
-
-	if ok := cm.cache.Set(key, value); !ok {
-		return fmt.Errorf("failed to set cache, key: %s", key)
-	}
-	return nil
+func (cm *CacheMgr) Set(key string, value []byte) bool {
+	return cm.cache.Set(key, value)
 }
 
-func (cm *CacheMgr) GetCacheStats() (*CacheStats, error) {
-	if cm.cache == nil {
-		return &CacheStats{}, fmt.Errorf("cache not found")
-	}
-
+func (cm *CacheMgr) GetCacheStats() *CacheStats {
 	stats := cm.cache.Stats()
 	entries := cm.cache.Size()
 	return &CacheStats{
@@ -76,5 +55,5 @@ func (cm *CacheMgr) GetCacheStats() (*CacheStats, error) {
 		misses:  stats.Misses(),
 		ratio:   stats.Ratio(),
 		entries: entries,
-	}, nil
+	}
 }
