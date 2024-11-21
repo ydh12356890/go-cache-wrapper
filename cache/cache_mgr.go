@@ -44,7 +44,11 @@ func (cm *CacheMgr) Get(key string) ([]byte, bool) {
 }
 
 func (cm *CacheMgr) Set(key string, value []byte) bool {
-	return cm.cache.Set(key, value)
+	ok := cm.cache.Set(key, value)
+	if !ok {
+		cm.cache.Delete(key)
+	}
+	return ok
 }
 
 func (cm *CacheMgr) GetCacheStats() *CacheStats {
